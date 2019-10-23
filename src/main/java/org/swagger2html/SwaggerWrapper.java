@@ -15,8 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
-import org.pegdown.PegDownProcessor;
+import org.apache.commons.lang3.StringUtils;
+//import org.pegdown.PegDownProcessor;
+
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 
 /**
  * {@link Swagger} class is not friendly to freemarker. Let's wrap it to produce
@@ -31,7 +36,7 @@ public class SwaggerWrapper {
 	private TreeMap<String, List<OperationIdentity>> tagAndIds = new TreeMap<String, List<OperationIdentity>>();
 	private ArrayList<Tag> tags;
 
-	private PegDownProcessor pgp = new PegDownProcessor();
+//	private PegDownProcessor pgp = new PegDownProcessor();
 
 	private Swagger swagger;
 
@@ -112,7 +117,26 @@ public class SwaggerWrapper {
 		}
 		String markdown = info.getDescription();
 		try {
-			return pgp.markdownToHtml(markdown);
+			//return pgp.markdownToHtml(markdown);
+
+			//DataHolder options = PegdownOptionsAdapter.flexmarkOptions(true,Extensions.ALL);
+			//Parser parser = Parser.builder(options).build();
+			//HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+
+			MutableDataSet options = new MutableDataSet();
+			// uncomment to set optional extensions
+			//options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), StrikethroughExtension.create()));
+
+			// uncomment to convert soft-breaks to hard breaks
+			//options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
+
+			Parser parser = Parser.builder(options).build();
+			HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+
+			// You can re-use parser and renderer instances
+			Node document = parser.parse(markdown);
+			String html = renderer.render(document); 		
+			return html;
 		} catch (Exception e) {
 			return markdown;
 		}

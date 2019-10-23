@@ -25,7 +25,7 @@ import java.util.*;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.swagger2html.SwaggerWrapper.OperationIdentity;
 import org.swagger2html.util.FreemarkerTemplateFactory;
 

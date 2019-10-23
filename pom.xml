@@ -4,15 +4,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.chenjianjx</groupId>
 	<artifactId>swagger2html</artifactId>
-	<version>2.0.2</version>
+	<version>2.0.3-SNAPHHOT</version>
 	<name>Swagger to Html</name>
 	<description>A java tool to convert swagger json to readable doc</description>
 	<url>https://github.com/chenjianjx/swagger2html</url>
-
+	<packaging>bundle</packaging>
 	<properties>
 		<junit.version>4.9</junit.version>
 		<jdk.version>1.7</jdk.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
+		<bundle.name>${project.groupId} :: ${project.artifactId} :: ${project.name}</bundle.name>
+	    <bundle.symbolicName>${project.groupId}.${project.artifactId}</bundle.symbolicName>
+		<bundle.namespace>${project.groupId}.${project.artifactId}</bundle.namespace>
 	</properties>
 
 
@@ -108,6 +112,132 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>4.2.1</version>
+				<extensions>true</extensions>
+				<!-- 
+				<executions>
+					<execution>
+						<id>bundle-manifest</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>manifest</goal>
+						</goals>
+					</execution>
+				</executions>
+				-->
+				<configuration>
+					<instructions>
+	                    <supportedProjectTypes>
+	                        <supportedProjectType>jar</supportedProjectType>
+	                        <supportedProjectType>bundle</supportedProjectType>
+	                        <supportedProjectType>war</supportedProjectType>
+	                    </supportedProjectTypes>
+						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+						<Bundle-Name>${bundle.name}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-Description>${project.description}</Bundle-Description>
+						<wrapImportPackage>;</wrapImportPackage>					
+						<supportIncrementalBuild>true</supportIncrementalBuild>
+						<_noee>true</_noee>
+						
+						<!-- IF YOU WANT TO EMBEDDED ALL COMPILE DEPENCIES ON YOU BUNDLE UNCOMMENT THIS -->
+						<!-- 
+						<Embed-Dependency>*;scope=compile|runtime|system;artifactId=!slf4j*|spring*|camel*|commons-logging*|jaxb*|logback*</Embed-Dependency>
+						<shade.phase>package</shade.phase>
+						<Embed-Transitive>true</Embed-Transitive>
+						-->
+						
+						<Include-Resource>
+							{maven-resources},
+							{maven-dependencies}							
+						</Include-Resource>				
+						<Export-Package>
+							!META-INF.*,
+							it.abd.esb.sign.*,
+						</Export-Package>
+						<Import-Package>
+							<!-- DEPENDENCIES SERVICEMIX -->
+							
+							META-INF.cxf,
+							org.apache.cxf;resolution:=optional,
+							org.apache.cxf.*;resolution:=optional,
+							org.apache.camel;resolution:=optional,
+							org.apache.camel.*;resolution:=optional,
+							com.fasterxml.jackson.*;resolution:=optional,
+							org.apache.tika.*;resolution:=optional,
+							org.springframework.*;resolution:=optional,
+							org.apache.wss4j.*;resolution:=optional,
+							org.apache.activemq.*;resolution:=optional,
+
+							<!-- DIPENDENZE ESTERNE -->
+							META-INF.resources.webjars.*;resolution:=optional,
+							
+							org.slf4j,
+							org.slf4j.*,
+
+							org.apache.commons.io,
+							org.apache.commons.io.*,
+
+							org.apache.commons.lang3,
+							org.apache.commons.lang3.*,
+							
+							org.apache.commons.logging;resolution:=optional,
+							org.apache.commons.logging.*;resolution:=optional, 
+							
+							org.apache.commons.beanutils;resolution:=optional,
+							org.apache.commons.beanutils.*;resolution:=optional, 
+							
+							org.objectweb.asm;resolution:=optional,
+							org.objectweb.asm.*;resolution:=optional,
+							
+							org.pegdown;resolution:=optional,
+							org.pegdown.*;resolution:=optional,
+							
+							org.jsoup,
+							org.jsoup.*,
+							com.vladsch.flexmark.*, 
+							
+							freemarker.*,
+
+							org.apache.pdfbox.*;version="${osgi.pdfbox.version}",
+							org.apache.xmpbox.*;version="${osgi.pdfbox.version}",
+							org.apache.fontbox.*;version="${osgi.pdfbox.version}",
+							
+							!io.swagger.models.utils,
+							io.swagger.*,
+							io.swagger.v3.*;resolution:=optional,							
+
+							<!-- DEPENDENCIES JRE -->
+							com.sun.*;resolution:=optional,
+							javax.annotation;resolution:=optional,
+							javax.activation.*;resolution:=optional,
+							javax.crypto;resolution:=optional,
+							javax.crypto.*;resolution:=optional,
+							javax.mail;resolution:=optional,
+							javax.mail.*;resolution:=optional,
+							javax.net.*;resolution:=optional,
+							javax.ws.rs;resolution:=optional,
+							javax.ws.rs.*;resolution:=optional,
+							javax.security.*;resolution:=optional,
+							javax.servlet.*;resolution:=optional,
+							javax.sql;resolution:=optional,
+							javax.sql.*;resolution:=optional,
+							javax.swing;resolution:=optional,
+							javax.swing.*;resolution:=optional,
+							javax.transaction.*;resolution:=optional,							
+							javax.xml.bind;resolution:=optional,
+							javax.xml.bind.*;resolution:=optional,					
+							javax.xml.*;resolution:=optional,
+				            org.w3c*;resolution:=optional,
+							org.xml.*;resolution:=optional,						
+						</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>					
 
 		</plugins>
 	</build>
@@ -123,14 +253,20 @@
 		</dependency>
 
 
-
-
+		<!-- REMOVED IN FAVOR OF commons-lang3 -->
+		<!--
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
-
+		-->
+		
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.9</version>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -153,16 +289,24 @@
 			<artifactId>swagger-parser</artifactId>
 			<version>1.0.13</version>
 		</dependency>
-
+		
+		<!-- REMOVED IN FAVOR OF FLEXMARK FOR CONFLICT WITH OSGI SYSTEM-->
+		<!-- 
 		<dependency>
 			<groupId>org.pegdown</groupId>
 			<artifactId>pegdown</artifactId>
 			<version>1.6.0</version>
 		</dependency>
+		-->
+		
+		<dependency>
+		    <groupId>com.vladsch.flexmark</groupId>
+		    <artifactId>flexmark-all</artifactId>
+		    <version>0.50.40</version>
+		</dependency>
 
 
 	</dependencies>
-
 
 	<profiles>
 		<profile>
